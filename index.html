@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SpamGuard — Обнаружение спама и мошенников</title>
+  <meta name="description" content="Проверьте ссылки, сообщения и документы на наличие спама или мошенничества. Бесплатный AI-анализатор угроз." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- PARTICLE CANVAS -->
+  <canvas id="particleCanvas"></canvas>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="18" cy="18" r="18" fill="url(#lg1)"/>
+            <path d="M12 18l4 4 8-8" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M26 10l-2 2M10 26l2-2" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+            <defs>
+              <linearGradient id="lg1" x1="0" y1="0" x2="36" y2="36">
+                <stop offset="0%" stop-color="#6C63FF"/>
+                <stop offset="100%" stop-color="#00D4AA"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <span class="logo-text">SpamGuard</span>
+        <span class="logo-badge">AI</span>
+      </div>
+      <nav class="nav">
+        <a href="#analyzer" class="nav-link">Анализатор</a>
+        <a href="#how-it-works" class="nav-link">Как работает</a>
+        <a href="#stats" class="nav-link">Статистика</a>
+      </nav>
+      <div class="header-cta">
+        <button class="btn btn-outline" onclick="scrollToAnalyzer()">Проверить сейчас</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        Защита в реальном времени
+      </div>
+      <h1 class="hero-title">
+        Защитись от<br/>
+        <span class="gradient-text">спама и мошенников</span>
+      </h1>
+      <p class="hero-subtitle">
+        Отправь ссылку, сообщение или документ — наш AI мгновенно определит,
+        является ли отправитель мошенником, спамером или добросовестным человеком.
+      </p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" onclick="scrollToAnalyzer()" id="hero-check-btn">
+          <span>Проверить бесплатно</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="hero-stats-inline">
+          <div class="stat-badge"><span>500к+</span> проверок</div>
+          <div class="stat-badge"><span>98%</span> точность</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="shield-container">
+        <div class="shield-glow"></div>
+        <div class="shield-icon">
+          <svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M50 5L10 22V55C10 78 28 98 50 115C72 98 90 78 90 55V22L50 5Z" fill="url(#shieldGrad)" stroke="url(#shieldBorder)" stroke-width="2"/>
+            <path d="M35 58l10 10 20-20" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <defs>
+              <linearGradient id="shieldGrad" x1="10" y1="5" x2="90" y2="115">
+                <stop offset="0%" stop-color="#6C63FF" stop-opacity="0.9"/>
+                <stop offset="100%" stop-color="#00D4AA" stop-opacity="0.9"/>
+              </linearGradient>
+              <linearGradient id="shieldBorder" x1="10" y1="5" x2="90" y2="115">
+                <stop offset="0%" stop-color="#a78bfa"/>
+                <stop offset="100%" stop-color="#34d399"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="orbit orbit-1"><div class="orbit-dot"></div></div>
+        <div class="orbit orbit-2"><div class="orbit-dot"></div></div>
+        <div class="orbit orbit-3"><div class="orbit-dot"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ANALYZER SECTION -->
+  <section class="analyzer-section" id="analyzer">
+    <div class="section-header">
+      <h2 class="section-title">Анализатор угроз</h2>
+      <p class="section-subtitle">Выберите тип проверки и загрузите содержимое</p>
+    </div>
+
+    <!-- TAB SELECTOR -->
+    <div class="tab-selector" role="tablist">
+      <button class="tab-btn active" id="tab-url" role="tab" onclick="switchTab('url')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span>Ссылка / URL</span>
+      </button>
+      <button class="tab-btn" id="tab-message" role="tab" onclick="switchTab('message')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Сообщение</span>
+      </button>
+      <button class="tab-btn" id="tab-document" role="tab" onclick="switchTab('document')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Документ</span>
+      </button>
+    </div>
+
+    <!-- ANALYZER CARD -->
+    <div class="analyzer-card glass-card">
+      <!-- URL TAB -->
+      <div class="tab-panel active" id="panel-url">
+        <div class="input-group">
+          <label class="input-label" for="url-input">Вставьте ссылку для проверки</label>
+          <div class="input-wrapper">
+            <div class="input-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+            <input
+              type="url"
+              id="url-input"
+              class="text-input"
+              placeholder="https://example.com или бит.лай/xxxxx"
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <button class="input-clear" id="url-clear" onclick="clearInput('url-input', 'url-clear')" style="display:none;">✕</button>
+          </div>
+          <div class="input-hint">Поддерживаются полные URL, сокращённые ссылки и IP-адреса</div>
+        </div>
+        <div class="example-urls">
+          <span class="example-label">Примеры для теста:</span>
+          <button class="example-chip safe-chip" onclick="setExample('url', 'https://google.com')">google.com ✅</button>
+          <button class="example-chip danger-chip" onclick="setExample('url', 'http://sberbank-secure-login.xyz/verify')">фишинг 🚨</button>
+          <button class="example-chip warn-chip" onclick="setExample('url', 'https://bit.ly/3xAmPle')">сокращённая ⚠️</button>
+        </div>
+        <button class="btn btn-primary btn-analyze" id="analyze-url-btn" onclick="analyzeURL()">
+          <span>Проверить ссылку</span>
+          <div class="btn-spinner hidden" id="url-spinner"></div>
+        </button>
+      </div>
+
+      <!-- MESSAGE TAB -->
+      <div class="tab-panel" id="panel-message">
+        <div class="input-group">
+          <label class="input-label" for="message-input">Вставьте текст сообщения</label>
+          <div class="textarea-wrapper">
+            <textarea
+              id="message-input"
+              class="text-area"
+              placeholder="Вставьте сюда подозрительное сообщение, письмо или текст..."
+              rows="6"
+            ></textarea>
+            <div class="char-count" id="char-count">0 символов</div>
+          </div>
+          <div class="input-hint">Поддерживаются: SMS, WhatsApp, Telegram, Email и любые текстовые сообщения — на русском и <strong>қазақша</strong> 🇰🇿</div>
+        </div>
+        <div class="example-urls">
+          <span class="example-label">Быстрые примеры:</span>
+          <button class="example-chip danger-chip" onclick="setExample('message', 'СРОЧНО! Вы выиграли 500,000 рублей! Для получения выигрыша введите ваш номер карты и CVV код на сайте: http://prize-win.xyz/claim. Предложение действует ТОЛЬКО СЕГОДНЯ!')">Лотерея-мошенник 🚨</button>
+          <button class="example-chip warn-chip" onclick="setExample('message', 'Добрый день! Вам одобрен кредит на 300,000 рублей. Позвоните нам: +7 999 123-45-67. Только сегодня специальная ставка 0%!')">Кредитный спам ⚠️</button>
+          <button class="example-chip danger-chip" onclick="setExample('message', 'Сәлем! Сізге арнайы жұмыс ұсынамыз. Үйден онлайн жұмыс, күніне 50,000 теңге табыс! Тәжірибесіз жұмыс. Бастау үшін депозит енгізіңіз: 15,000 теңге. Kaspi арқылы жіберіңіз. Бүгін ғана!')">Жұмыс-скам (қаз) 🚨</button>
+          <button class="example-chip warn-chip" onclick="setExample('message', 'Банктің қауіпсіздік қызметі: шотыңыз бұғатталды. Деректеріңізді растаңыз — карта нөмірі мен смстегі кодты жіберіңіз.')">Банк фишинг (қаз) ⚠️</button>
+        </div>
+        <button class="btn btn-primary btn-analyze" id="analyze-msg-btn" onclick="analyzeMessage()">
+          <span>Проверить сообщение</span>
+          <div class="btn-spinner hidden" id="msg-spinner"></div>
+        </button>
+      </div>
+
+      <!-- DOCUMENT TAB -->
+      <div class="tab-panel" id="panel-document">
+        <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+          <div class="upload-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polyline points="17 8 12 3 7 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <div class="upload-text">Перетащите файл сюда или нажмите для выбора</div>
+          <div class="upload-formats">Поддерживаются: .txt, .eml, .html, .csv, .log</div>
+          <div class="upload-selected hidden" id="upload-selected">
+            <span class="file-icon">📄</span>
+            <span id="file-name-display">filename.txt</span>
+            <button class="remove-file" onclick="removeFile(event)">✕</button>
+          </div>
+          <input type="file" id="file-input" hidden accept=".txt,.eml,.html,.htm,.csv,.log" onchange="handleFileSelect(event)"/>
+        </div>
+        <button class="btn btn-primary btn-analyze" id="analyze-doc-btn" onclick="analyzeDocument()">
+          <span>Проверить документ</span>
+          <div class="btn-spinner hidden" id="doc-spinner"></div>
+        </button>
+      </div>
+    </div>
+
+    <!-- RESULT PANEL -->
+    <div class="result-panel hidden" id="result-panel">
+      <div class="result-header">
+        <div class="result-icon" id="result-icon">🔍</div>
+        <div class="result-info">
+          <div class="result-verdict" id="result-verdict">Анализ...</div>
+          <div class="result-subject" id="result-subject"></div>
+          <div class="dominant-threat" id="dominant-threat"></div>
+        </div>
+        <div class="result-score-box">
+          <div class="score-label">Риск</div>
+          <div class="score-value" id="result-score">0%</div>
+        </div>
+      </div>
+
+      <!-- RISK METER -->
+      <div class="risk-meter">
+        <div class="risk-bar-bg">
+          <div class="risk-bar-fill" id="risk-bar-fill" style="width:0%"></div>
+          <div class="risk-bar-thumb" id="risk-bar-thumb" style="left:0%"></div>
+        </div>
+        <div class="risk-labels">
+          <span>Безопасно</span>
+          <span>Низкий</span>
+          <span>Средний</span>
+          <span>Высокий</span>
+        </div>
+      </div>
+
+      <!-- КАТЕГОРИЙНЫЕ ШКАЛЫ -->
+      <div class="category-grid" id="category-grid">
+        <div class="cat-item">
+          <div class="cat-header">
+            <span class="cat-label">🎣 Фишинг</span>
+            <span class="cat-value" id="cat-phishing">0%</span>
+          </div>
+          <div class="cat-bar-bg"><div class="cat-bar-fill phishing-bar" id="bar-phishing" style="width:0%"></div></div>
+        </div>
+        <div class="cat-item">
+          <div class="cat-header">
+            <span class="cat-label">💰 Мошенничество</span>
+            <span class="cat-value" id="cat-fraud">0%</span>
+          </div>
+          <div class="cat-bar-bg"><div class="cat-bar-fill fraud-bar" id="bar-fraud" style="width:0%"></div></div>
+        </div>
+        <div class="cat-item">
+          <div class="cat-header">
+            <span class="cat-label">📧 Спам</span>
+            <span class="cat-value" id="cat-spam">0%</span>
+          </div>
+          <div class="cat-bar-bg"><div class="cat-bar-fill spam-bar" id="bar-spam" style="width:0%"></div></div>
+        </div>
+        <div class="cat-item">
+          <div class="cat-header">
+            <span class="cat-label">🎭 Манипуляция</span>
+            <span class="cat-value" id="cat-manipulation">0%</span>
+          </div>
+          <div class="cat-bar-bg"><div class="cat-bar-fill manip-bar" id="bar-manipulation" style="width:0%"></div></div>
+        </div>
+      </div>
+
+      <!-- SENDER TYPE -->
+      <div class="sender-card" id="sender-card">
+        <div class="sender-label">Тип отправителя</div>
+        <div class="sender-type" id="sender-type">—</div>
+        <div class="sender-desc" id="result-description">—</div>
+      </div>
+
+      <!-- FLAGS & DETAILS -->
+      <div class="flags-section" id="flags-section" style="display:none">
+        <h3 class="flags-title">🔍 Обнаруженные признаки</h3>
+        <div class="flags-grid" id="flags-list"></div>
+      </div>
+
+      <div class="details-section" id="details-section" style="display:none">
+        <h3 class="details-title">📊 Подробный анализ</h3>
+        <div class="details-list" id="details-list"></div>
+      </div>
+
+      <!-- RECOMMENDATIONS -->
+      <div class="recommendations-section" id="recommendations-section" style="display:none">
+        <h3 class="rec-title">💡 Рекомендации</h3>
+        <div class="rec-list" id="rec-list"></div>
+      </div>
+
+      <!-- ACTION BUTTONS -->
+      <div class="result-actions">
+        <button class="btn btn-outline" onclick="resetAnalyzer()" id="reset-btn">Проверить другое</button>
+        <button class="btn btn-outline" onclick="exportResult()" id="export-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><polyline points="7 10 12 15 17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Скачать отчёт
+        </button>
+        <button class="btn btn-danger" onclick="reportScam()" id="report-btn">Сообщить о мошеннике</button>
+      </div>
+    </div>
+
+    <!-- HISTORY PANEL -->
+    <div class="history-panel" id="history-panel" style="display:none">
+      <div class="history-header">
+        <h3 class="history-title">🕒 История проверок</h3>
+        <button class="history-clear" onclick="clearHistory()">Очистить</button>
+      </div>
+      <div class="history-list" id="history-list"></div>
+    </div>
+
+    <!-- ERROR PANEL -->
+    <div class="error-panel hidden" id="error-panel">
+      <div class="error-icon">⚡</div>
+      <div class="error-title">Ошибка анализа</div>
+      <div class="error-message" id="error-message">Не удалось подключиться к серверу анализа.</div>
+      <div class="error-hint">Анализ выполняется прямо в браузере — сервер не нужен.</div>
+      <button class="btn btn-outline" onclick="hideError()">Закрыть</button>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how-section" id="how-it-works">
+    <div class="section-header">
+      <h2 class="section-title">Как это работает</h2>
+      <p class="section-subtitle">Многоуровневая система анализа угроз</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card glass-card">
+        <div class="step-number">01</div>
+        <div class="step-icon">📥</div>
+        <h3 class="step-title">Вы отправляете контент</h3>
+        <p class="step-desc">Ссылку, текст сообщения или файл (письмо, документ) от подозрительного отправителя</p>
+      </div>
+      <div class="step-card glass-card">
+        <div class="step-number">02</div>
+        <div class="step-icon">🔬</div>
+        <h3 class="step-title">AI-анализ угроз</h3>
+        <p class="step-desc">Система проверяет более 200 признаков: домен, ключевые слова, паттерны фишинга и манипуляции — на <strong>русском и казахском языках</strong></p>
+      </div>
+      <div class="step-card glass-card">
+        <div class="step-number">03</div>
+        <div class="step-icon">📊</div>
+        <h3 class="step-title">Оценка риска</h3>
+        <p class="step-desc">Вычисляется индекс опасности от 0 до 100 и определяется тип отправителя</p>
+      </div>
+      <div class="step-card glass-card">
+        <div class="step-number">04</div>
+        <div class="step-icon">🛡️</div>
+        <h3 class="step-title">Рекомендации</h3>
+        <p class="step-desc">Вы получаете конкретные советы: что делать дальше и как защитить себя</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- THREAT TYPES -->
+  <section class="threats-section">
+    <div class="section-header">
+      <h2 class="section-title">Что мы обнаруживаем</h2>
+      <p class="section-subtitle">Защита от всех видов онлайн-мошенничества</p>
+    </div>
+    <div class="threats-grid">
+      <div class="threat-card glass-card" data-type="phishing">
+        <div class="threat-emoji">🎣</div>
+        <h3>Фишинг</h3>
+        <p>Поддельные сайты банков, почты, соцсетей для кражи данных</p>
+        <div class="threat-tags"><span>Сбербанк</span><span>Email</span><span>Пароли</span></div>
+      </div>
+      <div class="threat-card glass-card" data-type="spam">
+        <div class="threat-emoji">📧</div>
+        <h3>Спам</h3>
+        <p>Массовые рекламные сообщения с навязчивыми предложениями</p>
+        <div class="threat-tags"><span>Реклама</span><span>Лотерея</span><span>Призы</span></div>
+      </div>
+      <div class="threat-card glass-card" data-type="fraud">
+        <div class="threat-emoji">💰</div>
+        <h3>Финансовый скам</h3>
+        <p>Инвестиционные пирамиды, фиктивные кредиты, криптомошенничество</p>
+        <div class="threat-tags"><span>Крипто</span><span>MLM</span><span>Займы</span></div>
+      </div>
+      <div class="threat-card glass-card" data-type="social">
+        <div class="threat-emoji">🎭</div>
+        <h3>Социальная инженерия</h3>
+        <p>Психологическое давление, создание срочности, угрозы</p>
+        <div class="threat-tags"><span>Давление</span><span>Угрозы</span><span>Срочность</span></div>
+      </div>
+      <div class="threat-card glass-card" data-type="malware">
+        <div class="threat-emoji">☣️</div>
+        <h3>Вредоносные ссылки</h3>
+        <p>Ссылки на сайты с вирусами, трояны и вредоносные программы</p>
+        <div class="threat-tags"><span>Вирус</span><span>Троян</span><span>Malware</span></div>
+      </div>
+      <div class="threat-card glass-card" data-type="romance">
+        <div class="threat-emoji">💔</div>
+        <h3>Романтический скам</h3>
+        <p>Ложные отношения для вымогательства денег или шантажа</p>
+        <div class="threat-tags"><span>Знакомства</span><span>Фото</span><span>Шантаж</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats-section" id="stats">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-value" data-target="500000">0</div>
+        <div class="stat-label">Проверок выполнено</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" data-target="98">0</div>
+        <div class="stat-label">% точность обнаружения</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" data-target="200">0</div>
+        <div class="stat-label">Признаков анализа</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" data-target="15000">0</div>
+        <div class="stat-label">Заблокированных угроз/день</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <div class="logo">
+          <div class="logo-icon" style="width:30px;height:30px;">
+            <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="18" cy="18" r="18" fill="url(#lg2)"/>
+              <path d="M12 18l4 4 8-8" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <defs>
+                <linearGradient id="lg2" x1="0" y1="0" x2="36" y2="36">
+                  <stop offset="0%" stop-color="#6C63FF"/>
+                  <stop offset="100%" stop-color="#00D4AA"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <span class="logo-text" style="font-size:1.2rem;">SpamGuard</span>
+        </div>
+        <p class="footer-tagline">Ваша цифровая защита от мошенников</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <div class="footer-col-title">Инструменты</div>
+          <a href="#" onclick="switchTab('url'); scrollToAnalyzer()">Проверка ссылок</a>
+          <a href="#" onclick="switchTab('message'); scrollToAnalyzer()">Проверка сообщений</a>
+          <a href="#" onclick="switchTab('document'); scrollToAnalyzer()">Проверка документов</a>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Полезные ресурсы</div>
+          <a href="https://мвд.рф" target="_blank" rel="noopener">МВД России</a>
+          <a href="https://cbr.ru" target="_blank" rel="noopener">Банк России</a>
+          <a href="https://virustotal.com" target="_blank" rel="noopener">VirusTotal</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 SpamGuard. Используйте в образовательных целях.</p>
+    </div>
+  </footer>
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="toast hidden" id="toast">
+    <span id="toast-message"></span>
+  </div>
+
+  <!-- DRAG OVERLAY -->
+  <div class="drag-overlay hidden" id="drag-overlay">
+    <div class="drag-message">
+      <div style="font-size: 3rem;">📂</div>
+      <div>Отпустите файл для проверки</div>
+    </div>
+  </div>
+
+  <script src="analyzer.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
